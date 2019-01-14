@@ -5,9 +5,9 @@
  */
 package com.semprace.semprace4iz230.UI;
 
+import com.github.sarxos.webcam.Webcam;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionClass;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionModelsAvailable;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 
 /**
@@ -28,14 +27,25 @@ public class MainPanel extends javax.swing.JFrame {
      * Creates new form MainPanel
      */
     private VisualRecognitionClass vrc;
-    
+    private  Webcam webcam;
     public MainPanel() {
         initComponents();
     }
-    
+
     public MainPanel(VisualRecognitionClass vrc) {
         initComponents();
         this.vrc = vrc;
+        webcam = vrc.getWebcam();
+        
+        try {
+             if (webcam.getDevice() == null) {
+            jWebCameraCapture.setEnabled(true);
+        }
+        } catch (NullPointerException e) {
+            jWebCameraCapture.setEnabled(false);
+        }
+       
+        
         setObjectsOnThisPanel();
     }
 
@@ -52,12 +62,14 @@ public class MainPanel extends javax.swing.JFrame {
         jPicture = new javax.swing.JLabel();
         jRecognize = new javax.swing.JButton();
         jResult = new javax.swing.JLabel();
+        jWebCameraCapture = new javax.swing.JButton();
+        JStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jRecognize.setText("Rozpoznej");
+        jRecognize.setText("Rozpoznej Obrázek");
         jRecognize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRecognizeActionPerformed(evt);
@@ -65,6 +77,15 @@ public class MainPanel extends javax.swing.JFrame {
         });
 
         jResult.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        jWebCameraCapture.setText("Obrázek z webkamery");
+        jWebCameraCapture.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jWebCameraCaptureActionPerformed(evt);
+            }
+        });
+
+        JStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -75,44 +96,53 @@ public class MainPanel extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jRecognize, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                            .addComponent(jRecognize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(0, 302, Short.MAX_VALUE))
-                    .addComponent(jPicture, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jResult, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jWebCameraCapture)
+                        .addGap(73, 73, 73)
+                        .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 146, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPicture, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(15, 15, 15))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(44, 44, 44)
-                .addComponent(jPicture, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPicture, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jResult, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(jRecognize, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRecognize, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jWebCameraCapture, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(45, 45, 45))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(64, 64, 64)
-                .addComponent(jResult, javax.swing.GroupLayout.PREFERRED_SIZE, 369, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jRecognizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRecognizeActionPerformed
-        
+        JStatus.setText("Zasílám dotaz...");
         JFileChooser jfc = new JFileChooser(vrc.getPROJECT_PATH() + "/pictures");
-        
+
         int returnValue = jfc.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = jfc.getSelectedFile();  
+            File selectedFile = jfc.getSelectedFile();
             try {
                 BufferedImage img = ImageIO.read(selectedFile);
                 jPicture.setIcon(vrc.getResizedImage(img));
                 jResult.setText(vrc.getPictureRecognizedByExistingModel(selectedFile.getName(), selectedFile.getPath(), VisualRecognitionModelsAvailable.valueOf(jComboBox1.getSelectedItem().toString())));
+                JStatus.setText("Hotovo");
             } catch (FileNotFoundException e) {
                 Logger.getLogger(MainPanel.class.getName()).log(Level.SEVERE, null, e);
             } catch (IOException ex) {
@@ -120,6 +150,24 @@ public class MainPanel extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jRecognizeActionPerformed
+
+    private void jWebCameraCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jWebCameraCaptureActionPerformed
+        // TODO add your handling code here:
+        JStatus.setText("Inicializuji webcameru");
+       webcam = vrc.getWebcam();
+        if (webcam.getDevice() != null) {
+            try {
+                vrc.getImageFromCamera();
+                JStatus.setText("Obrázek uložen ve složce \\pictures");
+            } catch (IOException e) {
+                JStatus.setText("Chyba p?i ukládání obrázku");
+            }
+
+        } else {
+            JStatus.setText("Kamera není dostupná na tomto po?íta?i");
+
+        }
+    }//GEN-LAST:event_jWebCameraCaptureActionPerformed
 
     /**
      * @param args the command line arguments
@@ -155,19 +203,21 @@ public class MainPanel extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public void setObjectsOnThisPanel() {
         jComboBox1.removeAllItems();
         for (VisualRecognitionModelsAvailable modelName : VisualRecognitionModelsAvailable.values()) {
             jComboBox1.addItem(modelName.toString());
         }
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel JStatus;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jPicture;
     private javax.swing.JButton jRecognize;
     private javax.swing.JLabel jResult;
+    private javax.swing.JButton jWebCameraCapture;
     // End of variables declaration//GEN-END:variables
 }

@@ -13,7 +13,7 @@ package com.semprace.semprace4iz230.VisualRecognition;
  */
 public enum VisualRecognitionModelsAvailable {
     
-    detect_faces,
+ 
     food,
     explicit,
     DEFAULT;

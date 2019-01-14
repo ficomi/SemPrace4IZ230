@@ -24,12 +24,15 @@ public class TextToSpeechClass {
     private final String URL;
     private final String NAME;
     private final String PROJECT_PATH;
+    private final String[] sentences;
    
     public TextToSpeechClass(String API_KEY, String URL, String NAME) {
         this.API_KEY = API_KEY;
         this.URL = URL;
         this.NAME = NAME;
         PROJECT_PATH=getProjectPath();
+        sentences = setSentences();
+        
     }
 
     public void getTextToSpeechAudio(String string) {
@@ -63,13 +66,22 @@ public class TextToSpeechClass {
             in.close();
             inputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
         }
 
     }
-    
+     
      private String getProjectPath() {
         return System.getProperty("user.dir");
     }
+     
+     private String[] setSentences(){
+     String []tempSentences = new String[] {"There is _ on the picture",
+                                            "There could be _ on the picture",
+                                            "There might be _ on the picture"};
+     
+     
+     
+     return tempSentences;
+     }
 
 }
