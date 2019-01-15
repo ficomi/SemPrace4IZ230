@@ -9,7 +9,7 @@ import com.semprace.semprace4iz230.TextToSpeech.TextToSpeechClass;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionClass;
 
 /**
- *
+ * Tato tøída se stará o správu uživatelského rozhraní. 
  * @author admin
  */
 public class UI {

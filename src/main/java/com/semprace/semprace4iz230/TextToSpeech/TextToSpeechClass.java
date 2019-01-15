@@ -18,18 +18,18 @@ import java.io.OutputStream;
 import java.util.HashMap;
 
 /**
- *
+ *  Tato tøída se stará o pøevod textu na mluvenou øeè.
  * @author admin
  */
 public class TextToSpeechClass {
 
-    private final String API_KEY;
-    private final String URL;
-    private final VisualRecognitionClass VRC;
-    private final String PROJECT_PATH;
-    private final String[] sentences;
-    private HashMap<String, Double> visualRecognitionDataForTextToSpeech;
-
+    private final String API_KEY; // API klíè.
+    private final String URL; // URL pro zaslání dotazu.
+    private final VisualRecognitionClass VRC; // Tøída VisualRecognitionClass
+    private final String PROJECT_PATH; // Cesta k projektové složce.
+    private final String[] sentences; // Vzorové vety.
+    private HashMap<String, Double> visualRecognitionDataForTextToSpeech;// Informace kobrázku.
+ 
     public TextToSpeechClass(String API_KEY, String URL, VisualRecognitionClass vrc) {
         this.API_KEY = API_KEY;
         this.URL = URL;
@@ -38,6 +38,12 @@ public class TextToSpeechClass {
         sentences = setSentences();
 
     }
+
+
+    /**
+     * Tato funkce pøevádí string do .wav souboru pomocí IBM Watsnu.
+     * @param string Vstupní text
+     */
 
     public void getTextToSpeechAudio(String string) {
         IamOptions options = new IamOptions.Builder()
@@ -78,13 +84,26 @@ public class TextToSpeechClass {
     private String getProjectPath() {
         return System.getProperty("user.dir");
     }
-
+    
+  /**
+     * Pøebírá si data, která byla zjištena z obrázku.
+     * 
+     */  
     private void setVisualRecognitionDataForTextToSpeech() {
          System.out.println("Mapa Prevzata s VRC");
         visualRecognitionDataForTextToSpeech = VRC.getVisualRecognitionDataForTextToSpeech();
        
     }
 
+    
+    
+   /**
+     * Zkontroluje všechna data o obrázku a podle "jistoty" vybere urèité elementy a pøevede je do vìt.
+     *  Vetší "jistota" než 0.9 -&gt; Na obrázku je <br>
+     *  Vetší "jistota" než 0.8 -&gt; Na obrázku asi je... <br>
+     *  Vetší "jistota" než 0.7 -&gt; Na obrázku asi možná je... <br>
+     * @return String Výsledná vìta.
+     */
     public String getTextFormVisualRecognition() {
         setVisualRecognitionDataForTextToSpeech();
         String finalSentence = "";
@@ -102,7 +121,10 @@ public class TextToSpeechClass {
         System.out.println("Finalní zpráva: "+finalSentence);
         return finalSentence;
     }
-
+   /**
+    * Zde jsou uložene všechny vzorové vìty k urèování co je na obrazku.
+    * @return String[] Všechny mozné vìty
+    */
     private String[] setSentences() {
         String[] tempSentences = new String[]{"There is _ on the picture.",
             "There could be _ on the picture.",

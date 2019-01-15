@@ -8,7 +8,7 @@ package com.semprace.semprace4iz230.VisualRecognition;
 
 
 /**
- *
+ * Zde jsou všechny možné klasifikátory pro klasifikaci obrázku.
  * @author admin
  */
 public enum VisualRecognitionModelsAvailable {

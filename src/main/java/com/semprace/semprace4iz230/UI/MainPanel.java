@@ -18,35 +18,35 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.swing.JFileChooser;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 /**
  *
  * @author admin
  */
 public class MainPanel extends javax.swing.JFrame {
 
+    private VisualRecognitionClass vrc; // Tøída VisualREcognitionClass.
+    private TextToSpeechClass ttsc; // Tøída TextToSpeechClass.
+    private Webcam webcam; // Webkamera.
+
     /**
      * Creates new form MainPanel
      */
-    private VisualRecognitionClass vrc;
-    private TextToSpeechClass ttsc;
-    private Webcam webcam;
-
     public MainPanel() {
         initComponents();
     }
 
-    public MainPanel(VisualRecognitionClass vrc,TextToSpeechClass ttsc) {
+    public MainPanel(VisualRecognitionClass vrc, TextToSpeechClass ttsc) {
         initComponents();
         this.vrc = vrc;
         this.ttsc = ttsc;
         webcam = vrc.getWebcam();
-    
-        setButtonsOnScreen();
         setObjectsOnThisPanel();
     }
 
@@ -94,19 +94,19 @@ public class MainPanel extends javax.swing.JFrame {
                 .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 717, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jPicture, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(15, 15, 15))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jRecognize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jWebCameraCapture)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 717, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jRecognize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jWebCameraCapture)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -129,25 +129,33 @@ public class MainPanel extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Spouští se rozpoznavaní vybraného obrazku.
+     *
+     * @throws FileNotFoundException Nenalezen soubor.
+     * @throws IOException Chyba pøi zápisu/ètení souboru.
+     * @param evt
+     */
     private void jRecognizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRecognizeActionPerformed
         JStatus.setText("");
         JFileChooser jfc = new JFileChooser(vrc.getPROJECT_PATH() + "/pictures");
-        
+        JStatus.setText("Zasílám dotaz...");
         int returnValue = jfc.showOpenDialog(null);
-          JStatus.setText("Zasílám dotaz...");
+
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            
+
             File selectedFile = jfc.getSelectedFile();
+
             try {
 
                 BufferedImage img = ImageIO.read(selectedFile);
                 jPicture.setIcon(vrc.getResizedImage(img));
                 jResult.setText(vrc.getPictureRecognizedByExistingModel(selectedFile.getName(), selectedFile.getPath(), VisualRecognitionModelsAvailable.valueOf(jComboBox1.getSelectedItem().toString())));
-                JStatus.setText("Hotovo");
+
                 ttsc.getTextToSpeechAudio(ttsc.getTextFormVisualRecognition());  //ttsc.getTextFormVisualRecognition()
                 playAudio();
-                
+                JStatus.setText("Hotovo");
+
             } catch (FileNotFoundException e) {
                 Logger.getLogger(MainPanel.class.getName()).log(Level.SEVERE, null, e);
             } catch (IOException ex) {
@@ -155,7 +163,12 @@ public class MainPanel extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jRecognizeActionPerformed
-
+    /**
+     * Spouští se webkamera a ukladá obrázek zachyhcený z vebkamery.
+     *
+     * @param evt
+     * @throws IOException Chyba pøi zápisu/ètení souboru.
+     */
     private void jWebCameraCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jWebCameraCaptureActionPerformed
         // TODO add your handling code here:
         JStatus.setText("Inicializuji webcameru");
@@ -164,14 +177,14 @@ public class MainPanel extends javax.swing.JFrame {
             try {
                 vrc.getImageFromCamera();
                 JStatus.setText("Obrázek uložen ve složce /pictures/camera.jpg");
-                jPicture.setIcon(vrc.getResizedImage(ImageIO.read(new File(vrc.getPROJECT_PATH()+"/pictures/camera.jpg"))));
+                jPicture.setIcon(vrc.getResizedImage(ImageIO.read(new File(vrc.getPROJECT_PATH() + "/pictures/camera.jpg"))));
             } catch (IOException e) {
-                JStatus.setText("Chyba p?i ukládání obrázku");
+                JStatus.setText("Chyba pøi ukládání obrázku");
                 System.out.println(e);
             }
 
         } else {
-            JStatus.setText("Kamera není dostupná na tomto po?íta?i");
+            JStatus.setText("Kamera není dostupná na tomto poèítaèi");
 
         }
     }//GEN-LAST:event_jWebCameraCaptureActionPerformed
@@ -202,6 +215,7 @@ public class MainPanel extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(MainPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -210,47 +224,48 @@ public class MainPanel extends javax.swing.JFrame {
             }
         });
     }
-
+ /**
+  * Spouští a nastavuje všechny objekty na panelu.
+  */
     public void setObjectsOnThisPanel() {
         jComboBox1.removeAllItems();
         for (VisualRecognitionModelsAvailable modelName : VisualRecognitionModelsAvailable.values()) {
             jComboBox1.addItem(modelName.toString());
         }
-
-    }
-
-    public void setButtonsOnScreen() {
         jRecognize.setText("Rozpoznej Obrázek");
         jWebCameraCapture.setText("Obrázek z webkamery");
         try {
-            if (webcam.getDevice()!=null) {
+            if (webcam.getDevice() != null) {
                 jWebCameraCapture.setEnabled(true);
             }
         } catch (NullPointerException e) {
             jWebCameraCapture.setEnabled(false);
-            jWebCameraCapture.setToolTipText("Webcamera není dostupná na tomto po?íta?i.");
+            jWebCameraCapture.setToolTipText("Webcamera není dostupná na tomto poèítaèi.");
         }
-
     }
-    
-    private void playAudio(){
-    try {
-   
-    AudioInputStream stream;
-    AudioFormat format;
-    DataLine.Info info;
-    Clip clip;
 
-    stream = AudioSystem.getAudioInputStream(new File (ttsc.getPROJECT_PATH()+"/audio/audio.wav"));
-    format = stream.getFormat();
-    info = new DataLine.Info(Clip.class, format);
-    clip = (Clip) AudioSystem.getLine(info);
-    clip.open(stream);
-    clip.start();
-}
-catch (Exception e) {
-    System.out.println(e);
-}
+ /**
+  * Pøehraje získané audio.
+  * @throws IOException Chyba pøi zápisu/ètení souboru.
+  * @throws LineUnavailableException
+  * @throws UnsupportedAudioFileException Nepodporovaný formát audia.
+  */
+    private void playAudio() {
+        try {
+            AudioInputStream stream;
+            AudioFormat format;
+            DataLine.Info info;
+            Clip clip;
+
+            stream = AudioSystem.getAudioInputStream(new File(ttsc.getPROJECT_PATH() + "/audio/audio.wav"));
+            format = stream.getFormat();
+            info = new DataLine.Info(Clip.class, format);
+            clip = (Clip) AudioSystem.getLine(info);
+            clip.open(stream);
+            clip.start();
+        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+            System.out.println(e);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

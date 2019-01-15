@@ -33,16 +33,16 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 /**
- *
+ * Tato tøída se stará o rozpoznání co je na obrazku pomoci IBM Watsnu.
  * @author admin
  */
 public class VisualRecognitionClass {
 
-    private final String API_KEY;
-    private final String URL;
-    private final String NAME;
-    private final String PROJECT_PATH;
-    private final Webcam WEBCAM;
+    private final String API_KEY; // API klíè.
+    private final String URL; // Adresa k zaslání dotazu.
+   
+    private final String PROJECT_PATH; //Cesta k projektu.
+    private final Webcam WEBCAM;// objekt webkamera.
 
     private HashMap<String, Double> visualRecognitionDataForTextToSpeech;
 
@@ -50,7 +50,7 @@ public class VisualRecognitionClass {
         PROJECT_PATH = getProjectPath();
         WEBCAM = getWebcam();
         API_KEY = apikey;
-        NAME = name;
+       
         URL = url;
         visualRecognitionDataForTextToSpeech = new HashMap<>();
     }
@@ -59,14 +59,23 @@ public class VisualRecognitionClass {
         return API_KEY;
     }
 
-    public String getNAME() {
-        return NAME;
-    }
 
     public String getURL() {
         return URL;
     }
 
+    /**
+     * Zasílá obrázek ke klasifikaci za pomocí defaultních klasifikátorù na servery IBM Watsnu.
+     * @param fileName Název souboru obrázku.
+     * @param filePath Cesta k obrázku.
+     * @param modelName Id klassifikátoru.
+     * @return string Zjištìné vlastnosti podle klassifikátoru, 
+     * @throws FileNotFoundException Nenalezen soubor obrázku
+     * @throws NotFoundException Nenalezena žadná data k zadánému klasifikátoru,
+     * @throws RequestTooLargeException Obrázek je moc Veliký.
+     * @throws ServiceResponseException Chyba serverù IBM.
+     */
+    
     public String getPictureRecognizedByExistingModel(String fileName, String filePath, VisualRecognitionModelsAvailable modelName) throws FileNotFoundException {
         try {
             IamOptions options = new IamOptions.Builder()
@@ -99,7 +108,17 @@ public class VisualRecognitionClass {
         }
 
     }
-
+/**
+     * Zasílá obrázek ke klasifikaci za pomocí vlastního klasifikátoru na servery IBM Watsnu.
+     * @param fileName Název souboru obrázku.
+     * @param filePath Cesta k obrázku.
+     * @param threshold Threshold ke klasifikaci.
+     * @return string Zjištìné vlastnosti podle klassifikátoru, 
+     * @throws FileNotFoundException Nenalezen soubor obrázku
+     * @throws NotFoundException Nenalezena žadná data k zadánému klasifikátoru,
+     * @throws RequestTooLargeException Obrázek je moc Veliký.
+     * @throws ServiceResponseException Chyba serverù IBM.
+     */
     public String getPictureRecognizedByCustomModel(String fileName, String filePath, float threshold) throws FileNotFoundException {
         try {
             IamOptions options = new IamOptions.Builder()
@@ -131,7 +150,10 @@ public class VisualRecognitionClass {
             return "Service returned status code " + e.getStatusCode() + ": " + e.getMessage();
         }
     }
-
+/**
+ * Tato funkce se stará o výber informací ze získaného JSONU, který nám zaslal IBM Watson.
+ * @return string Výsledná data pro zobrazení.
+ */
     private String getCurrentDay() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return dateFormat.format(Calendar.getInstance().getTime());
@@ -186,12 +208,19 @@ public class VisualRecognitionClass {
         System.out.println(tempString);
         return tempString;
     }
-
+/**
+ * Získá webkameru na tomto poèítaèi.
+ * @return Webcam Object webcamery,
+ */
     public Webcam getWebcam() {
         Webcam webcam = Webcam.getDefault();
         return webcam;
     }
-
+/**
+ * Získává obrazek z webkamery.
+ * @return String Zprava o získaní obrazku.
+ * @throws IOException Chyba pøi vytváøení souboru.
+ */
     public String getImageFromCamera() throws IOException {
         WEBCAM.open();
         BufferedImage image = WEBCAM.getImage();
@@ -208,7 +237,11 @@ public class VisualRecognitionClass {
     public String getPROJECT_PATH() {
         return PROJECT_PATH;
     }
-
+/**
+ * Mìní velikost obrázku aby se vešel do okna programu.
+ * @param img Vstupní obrázek.
+ * @return icon Výstupní obrázek.
+ */
     public Icon getResizedImage(BufferedImage img) {
 
         ImageIcon icon;
@@ -224,7 +257,10 @@ public class VisualRecognitionClass {
 
         return icon;
     }
-
+/**
+ * Ukláda data do mapy, která je pak požadována pro TextToSpeech.
+ * @param strings Získané informace.
+ */
     public void setVisualRecHashMap(String[] strings) {
         visualRecognitionDataForTextToSpeech.clear();
         try {
