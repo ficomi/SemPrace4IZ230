@@ -6,6 +6,7 @@
 package com.semprace.semprace4iz230.UI;
 
 import com.github.sarxos.webcam.Webcam;
+import com.semprace.semprace4iz230.TextToSpeech.TextToSpeechClass;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionClass;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionModelsAvailable;
 import java.awt.image.BufferedImage;
@@ -15,8 +16,13 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import javax.swing.JFileChooser;
-
+import javax.sound.sampled.AudioSystem;
 /**
  *
  * @author admin
@@ -27,25 +33,20 @@ public class MainPanel extends javax.swing.JFrame {
      * Creates new form MainPanel
      */
     private VisualRecognitionClass vrc;
-    private  Webcam webcam;
+    private TextToSpeechClass ttsc;
+    private Webcam webcam;
+
     public MainPanel() {
         initComponents();
     }
 
-    public MainPanel(VisualRecognitionClass vrc) {
+    public MainPanel(VisualRecognitionClass vrc,TextToSpeechClass ttsc) {
         initComponents();
         this.vrc = vrc;
+        this.ttsc = ttsc;
         webcam = vrc.getWebcam();
-        
-        try {
-             if (webcam.getDevice() == null) {
-            jWebCameraCapture.setEnabled(true);
-        }
-        } catch (NullPointerException e) {
-            jWebCameraCapture.setEnabled(false);
-        }
-       
-        
+    
+        setButtonsOnScreen();
         setObjectsOnThisPanel();
     }
 
@@ -69,7 +70,6 @@ public class MainPanel extends javax.swing.JFrame {
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        jRecognize.setText("Rozpoznej Obrázek");
         jRecognize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jRecognizeActionPerformed(evt);
@@ -78,14 +78,13 @@ public class MainPanel extends javax.swing.JFrame {
 
         jResult.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        jWebCameraCapture.setText("Obrázek z webkamery");
         jWebCameraCapture.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jWebCameraCaptureActionPerformed(evt);
             }
         });
 
-        JStatus.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        JStatus.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -95,54 +94,60 @@ public class MainPanel extends javax.swing.JFrame {
                 .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 717, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPicture, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(15, 15, 15))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jRecognize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jWebCameraCapture)
-                        .addGap(73, 73, 73)
-                        .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 146, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPicture, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(15, 15, 15))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(44, 44, 44)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPicture, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jResult, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jResult, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPicture, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jRecognize, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jWebCameraCapture, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(45, 45, 45))
+                    .addComponent(jWebCameraCapture, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(JStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(23, 23, 23))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jRecognizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRecognizeActionPerformed
-        JStatus.setText("Zasílám dotaz...");
+        JStatus.setText("");
         JFileChooser jfc = new JFileChooser(vrc.getPROJECT_PATH() + "/pictures");
-
+        
         int returnValue = jfc.showOpenDialog(null);
+          JStatus.setText("Zasílám dotaz...");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
+            
             File selectedFile = jfc.getSelectedFile();
             try {
+
                 BufferedImage img = ImageIO.read(selectedFile);
                 jPicture.setIcon(vrc.getResizedImage(img));
                 jResult.setText(vrc.getPictureRecognizedByExistingModel(selectedFile.getName(), selectedFile.getPath(), VisualRecognitionModelsAvailable.valueOf(jComboBox1.getSelectedItem().toString())));
                 JStatus.setText("Hotovo");
+                ttsc.getTextToSpeechAudio(ttsc.getTextFormVisualRecognition());  //ttsc.getTextFormVisualRecognition()
+                playAudio();
+                
             } catch (FileNotFoundException e) {
                 Logger.getLogger(MainPanel.class.getName()).log(Level.SEVERE, null, e);
             } catch (IOException ex) {
@@ -154,13 +159,15 @@ public class MainPanel extends javax.swing.JFrame {
     private void jWebCameraCaptureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jWebCameraCaptureActionPerformed
         // TODO add your handling code here:
         JStatus.setText("Inicializuji webcameru");
-       webcam = vrc.getWebcam();
+        webcam = vrc.getWebcam();
         if (webcam.getDevice() != null) {
             try {
                 vrc.getImageFromCamera();
-                JStatus.setText("Obrázek uložen ve složce \\pictures");
+                JStatus.setText("Obrázek uložen ve složce /pictures/camera.jpg");
+                jPicture.setIcon(vrc.getResizedImage(ImageIO.read(new File(vrc.getPROJECT_PATH()+"/pictures/camera.jpg"))));
             } catch (IOException e) {
                 JStatus.setText("Chyba p?i ukládání obrázku");
+                System.out.println(e);
             }
 
         } else {
@@ -210,6 +217,40 @@ public class MainPanel extends javax.swing.JFrame {
             jComboBox1.addItem(modelName.toString());
         }
 
+    }
+
+    public void setButtonsOnScreen() {
+        jRecognize.setText("Rozpoznej Obrázek");
+        jWebCameraCapture.setText("Obrázek z webkamery");
+        try {
+            if (webcam.getDevice()!=null) {
+                jWebCameraCapture.setEnabled(true);
+            }
+        } catch (NullPointerException e) {
+            jWebCameraCapture.setEnabled(false);
+            jWebCameraCapture.setToolTipText("Webcamera není dostupná na tomto po?íta?i.");
+        }
+
+    }
+    
+    private void playAudio(){
+    try {
+   
+    AudioInputStream stream;
+    AudioFormat format;
+    DataLine.Info info;
+    Clip clip;
+
+    stream = AudioSystem.getAudioInputStream(new File (ttsc.getPROJECT_PATH()+"/audio/audio.wav"));
+    format = stream.getFormat();
+    info = new DataLine.Info(Clip.class, format);
+    clip = (Clip) AudioSystem.getLine(info);
+    clip.open(stream);
+    clip.start();
+}
+catch (Exception e) {
+    System.out.println(e);
+}
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

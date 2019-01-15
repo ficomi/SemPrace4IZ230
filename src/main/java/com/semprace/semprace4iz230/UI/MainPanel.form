@@ -27,23 +27,25 @@
               <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
+                      <Component id="JStatus" min="-2" pref="717" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="jPicture" min="-2" pref="398" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="jResult" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="jRecognize" max="32767" attributes="0"/>
                           <Component id="jComboBox1" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="jWebCameraCapture" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
-                      <Component id="JStatus" min="-2" pref="211" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="146" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="jPicture" min="-2" pref="398" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jResult" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -52,11 +54,8 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jPicture" pref="369" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <Component id="jResult" min="-2" pref="187" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="jResult" max="32767" attributes="0"/>
+                  <Component id="jPicture" pref="344" max="32767" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
@@ -64,9 +63,10 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jRecognize" alignment="3" min="-2" pref="46" max="-2" attributes="0"/>
                   <Component id="jWebCameraCapture" alignment="3" min="-2" pref="46" max="-2" attributes="0"/>
-                  <Component id="JStatus" alignment="3" min="-2" pref="46" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="JStatus" min="-2" pref="29" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -90,9 +90,6 @@
     <Component class="javax.swing.JLabel" name="jPicture">
     </Component>
     <Component class="javax.swing.JButton" name="jRecognize">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Rozpoznej Obr&#xe1;zek"/>
-      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jRecognizeActionPerformed"/>
       </Events>
@@ -103,16 +100,13 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jWebCameraCapture">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Obr&#xe1;zek z webkamery"/>
-      </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jWebCameraCaptureActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="JStatus">
       <Properties>
-        <Property name="horizontalAlignment" type="int" value="0"/>
+        <Property name="horizontalAlignment" type="int" value="2"/>
       </Properties>
     </Component>
   </SubComponents>

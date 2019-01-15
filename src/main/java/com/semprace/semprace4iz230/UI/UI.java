@@ -5,6 +5,7 @@
  */
 package com.semprace.semprace4iz230.UI;
 
+import com.semprace.semprace4iz230.TextToSpeech.TextToSpeechClass;
 import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionClass;
 
 /**
@@ -14,10 +15,12 @@ import com.semprace.semprace4iz230.VisualRecognition.VisualRecognitionClass;
 public class UI {
 
    private final VisualRecognitionClass VRC;
+   private final TextToSpeechClass TTSC;
    MainPanel panel;
     
-    public UI(VisualRecognitionClass vrc) {
+    public UI(VisualRecognitionClass vrc,TextToSpeechClass ttsc) {
         VRC=vrc;
+        TTSC=ttsc;
         startUI();
     }
     
@@ -25,7 +28,7 @@ public class UI {
     
     
     private void startUI(){
-    panel=new MainPanel(VRC);
+    panel=new MainPanel(VRC,TTSC);
     panel.setVisible(true);
     }
     

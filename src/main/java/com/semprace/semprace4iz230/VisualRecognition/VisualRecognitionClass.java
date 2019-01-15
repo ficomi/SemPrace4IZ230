@@ -44,7 +44,7 @@ public class VisualRecognitionClass {
     private final String PROJECT_PATH;
     private final Webcam WEBCAM;
 
-    private HashMap<String, Object> visualRecognitionDataForTextToSpeech;
+    private HashMap<String, Double> visualRecognitionDataForTextToSpeech;
 
     public VisualRecognitionClass(String apikey, String name, String url) {
         PROJECT_PATH = getProjectPath();
@@ -196,6 +196,7 @@ public class VisualRecognitionClass {
         WEBCAM.open();
         BufferedImage image = WEBCAM.getImage();
         ImageIO.write(image, "JPG", new File(PROJECT_PATH + "/pictures/camera.jpg"));
+        WEBCAM.close();
 
         return "Obrázek z kamery je ulozen";
     }
@@ -226,17 +227,22 @@ public class VisualRecognitionClass {
 
     public void setVisualRecHashMap(String[] strings) {
         visualRecognitionDataForTextToSpeech.clear();
-
-        for (int i = 0; i < strings.length - 1; i++) {
+        try {
+            for (int i = 0; i < strings.length - 1; i++) {
             if (i % 2 == 0) {
-                visualRecognitionDataForTextToSpeech.put(strings[i], strings[i + 1]);
+                visualRecognitionDataForTextToSpeech.put(strings[i], Double.parseDouble(strings[i + 1]));
             }
-
         }
+            
+            
+        } catch (NumberFormatException e) {
+            visualRecognitionDataForTextToSpeech.clear();
+        }
+        
 
     }
 
-    public HashMap<String, Object> getVisualRecognitionDataForTextToSpeech() {
+    public HashMap<String, Double> getVisualRecognitionDataForTextToSpeech() {
         return visualRecognitionDataForTextToSpeech;
     }
 
